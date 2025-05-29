@@ -18,8 +18,12 @@ export default function UserList() {
             })
     }, [])
 
-    const addUserClickHandler = () => {
+    const createUserCkickHandler = () => {
         setShowCreate(true);
+    };
+
+    const closeCreateUserCkickHandler = () => {
+        setShowCreate(false);
     }
 
     return (
@@ -27,7 +31,7 @@ export default function UserList() {
             <section className="card users-container">
                 <Search />
 
-                {showCreate && <UserCreate />}
+                {showCreate && <UserCreate onClose={closeCreateUserCkickHandler}/>}
 
                 {/* Table component */}
                 <div className="table-wrapper">
@@ -96,7 +100,7 @@ export default function UserList() {
                 </div>
 
                 {/* New user button */}
-                <button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
+                <button className="btn-add btn" onClick={createUserCkickHandler}>Add new user</button>
 
                 <Pagination />
             </section>
