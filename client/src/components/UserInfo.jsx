@@ -2,7 +2,10 @@ import { useEffect, useState } from "react"
 import userService from "../services/userService";
 import { fromIsoDate } from "../utils/dateTimeUtils";
 
-export default function UserInfo({ userId }) {
+export default function UserInfo({ 
+    userId,
+    onClose,
+}) {
     const [user, setUser] = useState({});
 
     useEffect(() => {
@@ -20,7 +23,7 @@ export default function UserInfo({ userId }) {
                     <div className="detail-container">
                         <header className="headers">
                             <h2>User Detail</h2>
-                            <button className="btn close">
+                            <button className="btn close" onClick={onClose}>
                                 <svg
                                     aria-hidden="true"
                                     focusable="false"
