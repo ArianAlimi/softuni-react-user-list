@@ -6,12 +6,14 @@ import Search from "./Search";
 import UserListItem from "./UserListItem";
 import UserCreate from "./UserCreate";
 import UserInfo from "./UserInfo";
+import UserDelete from "./UserDelete";
 
 
 export default function UserList() {
     const [users, setUsers] = useState([])
     const [showCreate, setShowCreate] = useState(false)
-    const [userIdInfo, setUserIdInfo] = useState(); // Undefined
+    const [userIdInfo, setUserIdInfo] = useState(null);
+    const [userIdDelete, setUserIdDelete] = useState(null);
 
     useEffect(() => {
         userService.getAll()
@@ -31,28 +33,47 @@ export default function UserList() {
     const saveCreateUserClickHandler = async (e) => {
         // Stop default refresh behaviour
         e.preventDefault();
-        
+
         // Get form data
         const formData = new FormData(e.target);
         const userData = Object.fromEntries(formData);
 
         // Create new user on server
         const newUser = await userService.create(userData)
-        
+
         // Update local state
         setUsers(state => [...state, newUser])
 
         // close modal 
         setShowCreate(false);
-        
+
     };
 
     const userInfoClickHandler = (userId) => {
         setUserIdInfo(userId);
-    }
+    };
 
     const userInfoCloseHandler = () => {
         setUserIdInfo(null);
+    };
+
+    const userDeleteClickHandler = (userId) => {
+        setUserIdDelete(userId)
+    };
+
+    const userDeleteCloseHandler = () => {
+        setUserIdDelete(null);
+    };
+    
+    const  userDeleteHandler = async () => {
+        // DELETE request from server
+        await userService.delete(userIdDelete);
+
+        // delete from local state
+        setUsers(state => state.filter(user => user._id !== userIdDelete));
+
+        // close modal
+        setUserIdDelete(null);
     };
 
     return (
@@ -61,19 +82,25 @@ export default function UserList() {
                 <Search />
 
                 {showCreate && (
-                <UserCreate
-                 onClose={closeCreateUserCkickHandler}
-                 onSave={saveCreateUserClickHandler}
-                 
-                 />)
-                 }
-                
+                    <UserCreate
+                        onClose={closeCreateUserCkickHandler}
+                        onSave={saveCreateUserClickHandler}
+
+                    />)
+                }
+
                 {userIdInfo && (
-                    <UserInfo 
+                    <UserInfo
                         userId={userIdInfo}
                         onClose={userInfoCloseHandler}
                     />
-            )} 
+                )}
+
+                {userIdDelete && 
+                <UserDelete
+                 onClose={userDeleteCloseHandler}
+                 onDelete={userDeleteHandler}
+                  />}
 
                 {/* Table component */}
                 <div className="table-wrapper">
@@ -135,6 +162,7 @@ export default function UserList() {
                             {users.map(user => <UserListItem
                                 key={user._id}
                                 onInfoClick={userInfoClickHandler}
+                                onDeleteClick={userDeleteClickHandler}
                                 {...user}
                             />)}
 
